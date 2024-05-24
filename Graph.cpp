@@ -1,8 +1,6 @@
 #include "Graph.h"
 
-bool descending(int a, int b) {
-    return a > b;
-}
+bool descending(int a, int b) { return a > b; }
 
 Graph::~Graph() {
     for (int v = 0; v < verticesNum; v++) {
@@ -26,9 +24,7 @@ void Graph::addVertex(int incNum) {
     vertices[free_v_id++] = new Vertex(incNum);
 }
 
-void Graph::addIncident(int v, int inc) {
-    vertices[v]->addIncident(inc);
-}
+void Graph::addIncident(int v, int inc) { vertices[v]->addIncident(inc); }
 
 void Graph::print() {
     for (int v = 0; v < verticesNum; v++) {
@@ -73,7 +69,8 @@ void Graph::isBipartite() {
 }
 
 void Graph::eccentricity() {
-
+    // TODO: Implement
+    cout << '?' << endl;
 }
 
 void Graph::isPlanar() {
