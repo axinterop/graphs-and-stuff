@@ -20,6 +20,7 @@ public:
     void print();
 
     int getDegree() { return incidentNum; };
+    const int* getIncidents() { return incidentV; };
 };
 
 

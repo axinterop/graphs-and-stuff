@@ -1,4 +1,5 @@
 #include "Graph.h"
+#include <stack>
 
 bool descending(int a, int b) { return a > b; }
 
@@ -59,8 +60,40 @@ void Graph::degreeSequence() {
 }
 
 void Graph::numberOfComponents() {
-    // TODO: Implement
-    cout << '?' << endl;
+    bool notCandidates[verticesNum] = {};
+    int startVertex = 0;
+    int componentsCount = 0;
+
+    for (int c = 0; c < verticesNum; c++) {
+        if (notCandidates[c])
+            continue;
+        startVertex = c;
+
+        bool visited[verticesNum] = {};
+        // TODO: Implement custom stack
+        stack<int> unvisited;
+        unvisited.push(startVertex);
+
+        while (!unvisited.empty()) {
+            int currentV = unvisited.top();
+            unvisited.pop();
+
+            if (visited[currentV])
+                continue;
+
+            visited[currentV] = true;
+            notCandidates[currentV] = true;
+
+            for (int i = 0; i < vertices[currentV]->getDegree(); ++i) {
+                int childV = vertices[currentV]->getIncidents()[i];
+                if (!visited[childV]) {
+                    unvisited.push(childV);
+                }
+            }
+        }
+        componentsCount++;
+    }
+    cout << componentsCount << endl;
 }
 
 void Graph::isBipartite() {
