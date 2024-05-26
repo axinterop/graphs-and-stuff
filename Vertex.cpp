@@ -19,6 +19,14 @@ void Vertex::addIncident(int inc) {
     incidentV[free_inc_id++] = inc;
 }
 
+bool Vertex::isIncident(int key) {
+    for (int i = 0; i < incidentNum; i++) {
+        if (incidentV[i] == key)
+            return true;
+    }
+    return false;
+}
+
 void Vertex::print() {
     for (int i = 0; i < incidentNum; i++)
         cout << incidentV[i] << " ";

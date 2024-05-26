@@ -21,6 +21,9 @@ int main() {
             }
         }
 //        g.print();
+        // For debugging. TODO: Remove
+//        if (i == 0)
+//            continue;
         g.solve();
     }
 

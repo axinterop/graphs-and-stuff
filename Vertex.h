@@ -17,6 +17,7 @@ public:
     ~Vertex();
 
     void addIncident(int inc);
+    bool isIncident(int key);
     void print();
 
     int getDegree() { return incidentNum; };

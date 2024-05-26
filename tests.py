@@ -107,7 +107,7 @@ def compare_results(test_num: int, test: list, program: list, ignore_question: b
 
 def main():
     test_num = 4
-    ignore_q = False
+    ignore_q = True
     total_errors = 0
     total_cases = 0
     has_question = False
@@ -121,8 +121,9 @@ def main():
         result, has_question = compare_results(
             t, test_lines, program_lines, ignore_q)
         if result == LENGTH_ERROR_CODE:  # different lengths
-            continue
-        total_errors += result
+            total_errors += len(test_lines)
+        else:
+            total_errors += result
 
         f_out.close()
 

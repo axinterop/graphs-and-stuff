@@ -3,7 +3,10 @@
 
 #include <iostream>
 #include <stdexcept>
-#include <algorithm>
+// TODO: Remove imports
+#include <algorithm>     // for sort
+#include <stack>
+#include <vector>
 
 using namespace std;
 
@@ -14,6 +17,7 @@ private:
     Vertex **vertices;
     int verticesNum;
     int free_v_id = 0;
+    vector<int> componentVertices;
 public:
     Graph(): vertices(nullptr), verticesNum(0) {}
     explicit Graph(int v): verticesNum(v), vertices(new Vertex*[v]) {};
