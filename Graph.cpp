@@ -105,7 +105,7 @@ void Graph::numberOfComponents() {
 
 void Graph::isBipartite() {
     bool is_red[verticesNum] = {};
-    bool colored[verticesNum] = {};
+    bool colorIsSet[verticesNum] = {};
 
     for (int startVertex : componentVertices) {
         // Process components
@@ -114,7 +114,7 @@ void Graph::isBipartite() {
         stack<int> unvisited;
         unvisited.push(startVertex);
         is_red[startVertex] = true;
-        colored[startVertex] = true;
+        colorIsSet[startVertex] = true;
 
         while (!unvisited.empty()) {
             int parentV = unvisited.top();
@@ -122,39 +122,35 @@ void Graph::isBipartite() {
 
             if (visited[parentV])
                 continue;
-
             visited[parentV] = true;
-
 
             for (int i = 0; i < vertices[parentV]->getDegree(); ++i) {
                 int childV = vertices[parentV]->getIncidents()[i];
                 if (!visited[childV]) {
-                    if (colored[childV] && is_red[childV] == is_red[parentV]) {
+                    if (colorIsSet[childV] && is_red[childV] == is_red[parentV]) {
                         cout << "F" << endl;
                         return;
                     }
-                    unvisited.push(childV);
-                    if (!colored[childV]) {
+                    if (!colorIsSet[childV]) {
                         is_red[childV] = !is_red[parentV];
-                        colored[childV] = true;
+                        colorIsSet[childV] = true;
                     }
+                    unvisited.push(childV);
                 }
             }
         }
     }
 
-    for (int i = 0; i <= 1; i++) {
-        for (int v1 = 0; v1 < verticesNum; v1++) {
-            for (int v2 = 0; v2 < verticesNum; v2++) {
-                if (v1 == v2)
-                    continue;
-                // can be optimised
-                // checks if v2 is incident with v1, but does not remember it
-                // so also checks if v1 is incident with v2
-                if (is_red[v1] == is_red[v2] && vertices[v1]->isIncident(v2)) {
-                    cout << "F" << endl;
-                    return;
-                }
+    for (int v1 = 0; v1 < verticesNum; v1++) {
+        for (int v2 = 0; v2 < verticesNum; v2++) {
+            if (v1 == v2)
+                continue;
+            // can be optimised
+            // checks if v2 is incident with v1, but
+            // also checks if v1 is incident with v2
+            if (is_red[v1] == is_red[v2] && vertices[v1]->isIncident(v2)) {
+                cout << "F" << endl;
+                return;
             }
         }
     }
@@ -164,23 +160,23 @@ void Graph::isBipartite() {
 void Graph::eccentricity() {
     for (int startVertex = 0; startVertex < verticesNum; startVertex++) {
         // Process components
-        bool visited[verticesNum] = {};
         int distance[verticesNum] = {};
+        bool distanceIsSet[verticesNum] = {};
         // TODO: Implement custom queue
         queue<int> unvisited;
         unvisited.push(startVertex);
         distance[startVertex] = 0;
-        visited[startVertex] = true;
+        distanceIsSet[startVertex] = true;
 
         while (!unvisited.empty()) {
             int parentV = unvisited.front();
             unvisited.pop();
             for (int i = 0; i < vertices[parentV]->getDegree(); ++i) {
                 int childV = vertices[parentV]->getIncidents()[i];
-                if (!visited[childV]) {
-                    unvisited.push(childV);
+                if (!distanceIsSet[childV]) {
                     distance[childV] = distance[parentV] + 1;
-                    visited[childV] = true;
+                    distanceIsSet[childV] = true;
+                    unvisited.push(childV);
                 }
             }
         }
