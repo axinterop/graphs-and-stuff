@@ -166,29 +166,21 @@ void Graph::eccentricity() {
         // Process components
         bool visited[verticesNum] = {};
         int distance[verticesNum] = {};
-        bool distanceIsSet[verticesNum] = {};
         // TODO: Implement custom queue
         queue<int> unvisited;
         unvisited.push(startVertex);
         distance[startVertex] = 0;
-        distanceIsSet[startVertex] = true;
+        visited[startVertex] = true;
 
         while (!unvisited.empty()) {
             int parentV = unvisited.front();
             unvisited.pop();
-
-            if (visited[parentV])
-                continue;
-            visited[parentV] = true;
-
             for (int i = 0; i < vertices[parentV]->getDegree(); ++i) {
                 int childV = vertices[parentV]->getIncidents()[i];
                 if (!visited[childV]) {
                     unvisited.push(childV);
-                    if (!distanceIsSet[childV]) {
-                        distance[childV] = distance[parentV] + 1;
-                        distanceIsSet[childV] = true;
-                    }
+                    distance[childV] = distance[parentV] + 1;
+                    visited[childV] = true;
                 }
             }
         }
