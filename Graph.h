@@ -6,6 +6,7 @@
 // TODO: Remove imports
 #include <algorithm>     // for sort
 #include <stack>
+#include <queue>
 #include <vector>
 
 using namespace std;

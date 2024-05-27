@@ -20,10 +20,6 @@ int main() {
                 g.addIncident(vertex, incidentIn - 1);
             }
         }
-//        g.print();
-        // For debugging. TODO: Remove
-//        if (i == 0)
-//            continue;
         g.solve();
     }
 

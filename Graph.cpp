@@ -133,7 +133,6 @@ void Graph::isBipartite() {
                         cout << "F" << endl;
                         return;
                     }
-
                     unvisited.push(childV);
                     if (!colored[childV]) {
                         is_red[childV] = !is_red[parentV];
@@ -163,8 +162,44 @@ void Graph::isBipartite() {
 }
 
 void Graph::eccentricity() {
-    // TODO: Implement
-    cout << '?' << endl;
+    for (int startVertex = 0; startVertex < verticesNum; startVertex++) {
+        // Process components
+        bool visited[verticesNum] = {};
+        int distance[verticesNum] = {};
+        bool distanceIsSet[verticesNum] = {};
+        // TODO: Implement custom queue
+        queue<int> unvisited;
+        unvisited.push(startVertex);
+        distance[startVertex] = 0;
+        distanceIsSet[startVertex] = true;
+
+        while (!unvisited.empty()) {
+            int parentV = unvisited.front();
+            unvisited.pop();
+
+            if (visited[parentV])
+                continue;
+            visited[parentV] = true;
+
+            for (int i = 0; i < vertices[parentV]->getDegree(); ++i) {
+                int childV = vertices[parentV]->getIncidents()[i];
+                if (!visited[childV]) {
+                    unvisited.push(childV);
+                    if (!distanceIsSet[childV]) {
+                        distance[childV] = distance[parentV] + 1;
+                        distanceIsSet[childV] = true;
+                    }
+                }
+            }
+        }
+
+        int max = -1;
+        for (auto d: distance) {
+            if (d > max) max = d;
+        }
+        cout << max << " ";
+    }
+    cout << endl;
 }
 
 void Graph::isPlanar() {
