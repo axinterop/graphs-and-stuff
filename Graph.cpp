@@ -196,8 +196,26 @@ void Graph::isPlanar() {
 }
 
 void Graph::colorGreedy() {
-    // TODO: Implement
-    cout << '?' << endl;
+    int color[verticesNum] = {};
+    color[0] = 1;
+    for (int parentV = 1; parentV < verticesNum; parentV++) {
+        bool colorOccupied[verticesNum] = {};
+        for (int i = 0; i < vertices[parentV]->getDegree(); i++) {
+            int childV = vertices[parentV]->getIncidents()[i];
+            colorOccupied[color[childV]] = true;
+        }
+        for (int potenticalColor = 1; potenticalColor < verticesNum + 1; potenticalColor++) {
+            if (!colorOccupied[potenticalColor]) {
+                color[parentV] = potenticalColor;
+                break;
+            }
+        }
+    }
+    for (int v = 0; v < verticesNum; v++) {
+        cout << color[v] << " ";
+    }
+
+    cout << endl;
 }
 
 void Graph::colorLF() {

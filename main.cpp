@@ -20,6 +20,8 @@ int main() {
                 g.addIncident(vertex, incidentIn - 1);
             }
         }
+//        if (i < 4)
+//            continue;
         g.solve();
     }
 
