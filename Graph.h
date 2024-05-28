@@ -16,7 +16,6 @@ using namespace std;
 class Graph {
 private:
     Vertex **vertices;
-    Vertex **verticesDesc;
     int verticesNum;
     int free_v_id = 0;
     vector<int> componentVertices;

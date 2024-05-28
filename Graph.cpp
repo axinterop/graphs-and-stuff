@@ -13,7 +13,6 @@ Graph::~Graph() {
         delete vertices[v];
     }
     delete[] vertices;
-    delete[] verticesDesc;
 }
 
 Vertex &Graph::operator[](int index) {
@@ -55,14 +54,13 @@ void Graph::solve() {
 }
 
 void Graph::degreeSequence() {
-    verticesDesc = new Vertex*[verticesNum];
+    int degrees[verticesNum];
     for (int v = 0; v < verticesNum; v++)
-        verticesDesc[v] = vertices[v];
+        degrees[v] = vertices[v]->getDegree();
     // TODO: Implement sort algorithm
-    std::sort(verticesDesc, verticesDesc + verticesNum, descendingVertex);
-    for (int v = 0; v < verticesNum; v++) {
-        cout << verticesDesc[v]->getDegree() << " ";
-    }
+    std::sort(degrees, degrees + verticesNum, descending);
+    for (int v = 0; v < verticesNum; v++)
+        cout << degrees[v] << " ";
     cout << endl;
 }
 
@@ -226,6 +224,11 @@ void Graph::colorGreedy() {
 }
 
 void Graph::colorLF() {
+    auto **verticesDesc = new Vertex*[verticesNum];
+    for (int v = 0; v < verticesNum; v++)
+        verticesDesc[v] = vertices[v];
+    std::sort(verticesDesc, verticesDesc + verticesNum, descendingVertex);
+
     int color[verticesNum] = {};
     color[verticesDesc[0]->getNum()] = 1;
 
