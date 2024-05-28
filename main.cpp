@@ -13,7 +13,7 @@ int main() {
         for (int vertex = 0; vertex < verticesNum; vertex++) {
             // Process one vertex
             cin >> incidentNum;
-            g.addVertex(incidentNum);
+            g.addVertex(vertex, incidentNum);
             for (int incident = 0; incident < incidentNum; incident++) {
                 // Process one incident vertex
                 cin >> incidentIn;

@@ -8,20 +8,32 @@ using namespace std;
 
 class Vertex {
 private:
+    int num;
     int *incidentV;
     int free_inc_id = 0;
     int incidentNum;
 public:
-    Vertex(): incidentV(nullptr), incidentNum(0) {};
-    explicit Vertex(int incNum);
+    Vertex(): num(-1), incidentV(nullptr), incidentNum(0) {};
+    explicit Vertex(int n, int incNum);
     ~Vertex();
 
     void addIncident(int inc);
     bool isIncident(int key);
     void print();
 
-    int getDegree() { return incidentNum; };
+    int getDegree() const { return incidentNum; };
+    int getNum() const { return num; }
     const int* getIncidents() { return incidentV; };
+
+    Vertex& operator=(const Vertex& other);
+
+    static Vertex** begin(Vertex** vertices) {
+        return vertices;
+    }
+
+    static Vertex** end(Vertex** vertices, int size) {
+        return vertices + size;
+    }
 };
 
 

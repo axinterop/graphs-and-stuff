@@ -16,6 +16,7 @@ using namespace std;
 class Graph {
 private:
     Vertex **vertices;
+    Vertex **verticesDesc;
     int verticesNum;
     int free_v_id = 0;
     vector<int> componentVertices;
@@ -26,10 +27,8 @@ public:
 
     Vertex& operator[](int index);
 
-    void addVertex(int incNum);
+    void addVertex(int n, int incNum);
     void addIncident(int v, int inc);
-
-    void DFS();
 
     void print();
     void solve();

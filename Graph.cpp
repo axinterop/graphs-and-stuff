@@ -2,11 +2,18 @@
 
 bool descending(int a, int b) { return a > b; }
 
+bool descendingVertex(const Vertex *a, const Vertex *b) {
+    if (a->getDegree() == b->getDegree())
+        return a->getNum() <= b->getNum();
+    return a->getDegree() > b->getDegree();
+}
+
 Graph::~Graph() {
     for (int v = 0; v < verticesNum; v++) {
         delete vertices[v];
     }
     delete[] vertices;
+    delete[] verticesDesc;
 }
 
 Vertex &Graph::operator[](int index) {
@@ -17,11 +24,11 @@ Vertex &Graph::operator[](int index) {
     return *vertices[index];
 }
 
-void Graph::addVertex(int incNum) {
+void Graph::addVertex(int n, int incNum) {
     if (free_v_id >= verticesNum) {
         throw std::invalid_argument("free_v_id exceeded verticesNum");
     }
-    vertices[free_v_id++] = new Vertex(incNum);
+    vertices[free_v_id++] = new Vertex(n, incNum);
 }
 
 void Graph::addIncident(int v, int inc) { vertices[v]->addIncident(inc); }
@@ -48,13 +55,14 @@ void Graph::solve() {
 }
 
 void Graph::degreeSequence() {
-    int degrees[verticesNum];
+    verticesDesc = new Vertex*[verticesNum];
     for (int v = 0; v < verticesNum; v++)
-        degrees[v] = vertices[v]->getDegree();
+        verticesDesc[v] = vertices[v];
     // TODO: Implement sort algorithm
-    std::sort(degrees, degrees + verticesNum, descending);
-    for (int v = 0; v < verticesNum; v++)
-        cout << degrees[v] << " ";
+    std::sort(verticesDesc, verticesDesc + verticesNum, descendingVertex);
+    for (int v = 0; v < verticesNum; v++) {
+        cout << verticesDesc[v]->getDegree() << " ";
+    }
     cout << endl;
 }
 
@@ -88,7 +96,6 @@ void Graph::numberOfComponents() {
             // currentV was popped() from child stack, so it's a part of some component
             // thus cannot be a candidate for separate component
             candidateForComponent[currentV] = false;
-
             for (int i = 0; i < vertices[currentV]->getDegree(); ++i) {
                 int childV = vertices[currentV]->getIncidents()[i];
                 if (!visited[childV]) {
@@ -219,8 +226,27 @@ void Graph::colorGreedy() {
 }
 
 void Graph::colorLF() {
-    // TODO: Implement
-    cout << '?' << endl;
+    int color[verticesNum] = {};
+    color[verticesDesc[0]->getNum()] = 1;
+
+    for (int vIndex = 1; vIndex < verticesNum; vIndex++) {
+        int parentV = verticesDesc[vIndex]->getNum();
+        bool colorOccupied[verticesNum] = {};
+        for (int i = 0; i < vertices[parentV]->getDegree(); i++) {
+            int childV = vertices[parentV]->getIncidents()[i];
+            colorOccupied[color[childV]] = true;
+        }
+        for (int potenticalColor = 1; potenticalColor < verticesNum + 1; potenticalColor++) {
+            if (!colorOccupied[potenticalColor]) {
+                color[parentV] = potenticalColor;
+                break;
+            }
+        }
+    }
+
+    for (int v = 0; v < verticesNum; v++)
+        cout << color[v] << " ";
+    cout << endl;
 }
 
 void Graph::colorSLF() {
