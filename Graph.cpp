@@ -123,7 +123,7 @@ void Graph::numberOfComponents() {
 
         startVertex = c;
 
-        bool visited[verticesNum] = {};
+        Vector<bool> visited(verticesNum, false);
         Stack unvisited;
         unvisited.push(startVertex);
 
@@ -153,12 +153,12 @@ void Graph::numberOfComponents() {
 }
 
 void Graph::isBipartite() {
-    bool is_red[verticesNum] = {};
-    bool colorIsSet[verticesNum] = {};
+    Vector<bool> is_red(verticesNum, false);
+    Vector<bool> colorIsSet(verticesNum, false);
 
     for (int startVertex: componentVertices) {
         // Process components
-        bool visited[verticesNum] = {};
+        Vector<bool> visited(verticesNum, false);
         Stack unvisited;
         unvisited.push(startVertex);
         is_red[startVertex] = true;
@@ -208,8 +208,8 @@ void Graph::isBipartite() {
 void Graph::eccentricity() {
     for (int startVertex = 0; startVertex < verticesNum; startVertex++) {
         // Process components
-        int distance[verticesNum] = {};
-        bool distanceIsSet[verticesNum] = {};
+        Vector<int> distance(verticesNum, 0);
+        Vector<bool> distanceIsSet(verticesNum, false);
         Queue unvisited;
         unvisited.enqueue(startVertex);
         distance[startVertex] = 0;
@@ -243,17 +243,17 @@ void Graph::isPlanar() {
 }
 
 void Graph::colorGreedy() {
-    int color[verticesNum] = {};
+    Vector<int> color(verticesNum, 0);
     color[0] = 1;
     for (int parentV = 1; parentV < verticesNum; parentV++) {
-        bool colorOccupied[verticesNum] = {};
+        Vector<bool> colorOccupied(verticesNum, false);
         for (int i = 0; i < vertices[parentV]->getDegree(); i++) {
             int childV = vertices[parentV]->getIncidents()[i];
             colorOccupied[color[childV]] = true;
         }
-        for (int potenticalColor = 1; potenticalColor < verticesNum + 1; potenticalColor++) {
-            if (!colorOccupied[potenticalColor]) {
-                color[parentV] = potenticalColor;
+        for (int potentialColor = 1; potentialColor < verticesNum + 1; potentialColor++) {
+            if (!colorOccupied[potentialColor]) {
+                color[parentV] = potentialColor;
                 break;
             }
         }
@@ -271,19 +271,19 @@ void Graph::colorLF() {
         verticesDesc[v] = vertices[v];
     mergeSort(verticesDesc, 0, verticesNum - 1, descendingVertex);
 
-    int color[verticesNum] = {};
+    Vector<int> color(verticesNum, 0);
     color[verticesDesc[0]->getNum()] = 1;
 
     for (int vIndex = 1; vIndex < verticesNum; vIndex++) {
         int parentV = verticesDesc[vIndex]->getNum();
-        bool colorOccupied[verticesNum] = {};
+        Vector<bool> colorOccupied(verticesNum, false);
         for (int i = 0; i < vertices[parentV]->getDegree(); i++) {
             int childV = vertices[parentV]->getIncidents()[i];
             colorOccupied[color[childV]] = true;
         }
-        for (int potenticalColor = 1; potenticalColor < verticesNum + 1; potenticalColor++) {
-            if (!colorOccupied[potenticalColor]) {
-                color[parentV] = potenticalColor;
+        for (int potentialColor = 1; potentialColor < verticesNum + 1; potentialColor++) {
+            if (!colorOccupied[potentialColor]) {
+                color[parentV] = potentialColor;
                 break;
             }
         }

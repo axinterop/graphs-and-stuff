@@ -7,7 +7,7 @@ Vertex::Vertex(int n, int incNum) {
     for (int i = 0; i < incidentNum; i++) {
         incidentV[i] = -1;
     }
-};
+}
 
 Vertex::~Vertex() {
     delete[] incidentV;

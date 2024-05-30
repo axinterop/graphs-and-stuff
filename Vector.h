@@ -14,6 +14,11 @@ private:
 public:
     Vector() : capacity(1), size(0), arr(new T[1]) {}
     explicit Vector(size_t cap) : capacity(cap), size(0), arr(new T[cap]) {}
+    Vector(size_t cap, const T& val) : capacity(cap), size(cap), arr(new T[cap]) {
+        for (size_t i = 0; i < size; ++i) {
+            arr[i] = val;
+        }
+    }
     ~Vector() { delete[] arr; }
 
     void push_back(const T& val);
