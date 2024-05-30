@@ -8,6 +8,16 @@ bool descendingVertex(const Vertex *a, const Vertex *b) {
     return a->getDegree() > b->getDegree();
 }
 
+bool descendingVertexSaturation(const Vertex *a, const Vertex *b) {
+    if (a->getSaturation() == b->getSaturation()) {
+        if (a->getDegree() == b->getDegree())
+            return a->getNum() < b->getNum();
+        return a->getDegree() > b->getDegree();
+    }
+    return a->getSaturation() > b->getSaturation();
+}
+
+
 Graph::~Graph() {
     for (int v = 0; v < verticesNum; v++) {
         delete vertices[v];
@@ -79,12 +89,11 @@ void Graph::numberOfComponents() {
         startVertex = c;
 
         bool visited[verticesNum] = {};
-        // TODO: Implement custom stack
-        stack<int> unvisited;
+        Stack unvisited;
         unvisited.push(startVertex);
 
-        while (!unvisited.empty()) {
-            int currentV = unvisited.top();
+        while (!unvisited.isEmpty()) {
+            int currentV = unvisited.peek();
             unvisited.pop();
 
             if (visited[currentV])
@@ -112,17 +121,16 @@ void Graph::isBipartite() {
     bool is_red[verticesNum] = {};
     bool colorIsSet[verticesNum] = {};
 
-    for (int startVertex : componentVertices) {
+    for (int startVertex: componentVertices) {
         // Process components
         bool visited[verticesNum] = {};
-        // TODO: Implement custom stack
-        stack<int> unvisited;
+        Stack unvisited;
         unvisited.push(startVertex);
         is_red[startVertex] = true;
         colorIsSet[startVertex] = true;
 
-        while (!unvisited.empty()) {
-            int parentV = unvisited.top();
+        while (!unvisited.isEmpty()) {
+            int parentV = unvisited.peek();
             unvisited.pop();
 
             if (visited[parentV])
@@ -167,21 +175,20 @@ void Graph::eccentricity() {
         // Process components
         int distance[verticesNum] = {};
         bool distanceIsSet[verticesNum] = {};
-        // TODO: Implement custom queue
-        queue<int> unvisited;
-        unvisited.push(startVertex);
+        Queue unvisited;
+        unvisited.enqueue(startVertex);
         distance[startVertex] = 0;
         distanceIsSet[startVertex] = true;
 
-        while (!unvisited.empty()) {
-            int parentV = unvisited.front();
-            unvisited.pop();
+        while (!unvisited.isEmpty()) {
+            int parentV = unvisited.peek();
+            unvisited.dequeue();
             for (int i = 0; i < vertices[parentV]->getDegree(); ++i) {
                 int childV = vertices[parentV]->getIncidents()[i];
                 if (!distanceIsSet[childV]) {
                     distance[childV] = distance[parentV] + 1;
                     distanceIsSet[childV] = true;
-                    unvisited.push(childV);
+                    unvisited.enqueue(childV);
                 }
             }
         }
@@ -224,7 +231,7 @@ void Graph::colorGreedy() {
 }
 
 void Graph::colorLF() {
-    auto **verticesDesc = new Vertex*[verticesNum];
+    auto **verticesDesc = new Vertex *[verticesNum];
     for (int v = 0; v < verticesNum; v++)
         verticesDesc[v] = vertices[v];
     std::sort(verticesDesc, verticesDesc + verticesNum, descendingVertex);
@@ -250,6 +257,8 @@ void Graph::colorLF() {
     for (int v = 0; v < verticesNum; v++)
         cout << color[v] << " ";
     cout << endl;
+
+    delete[] verticesDesc;
 }
 
 void Graph::colorSLF() {

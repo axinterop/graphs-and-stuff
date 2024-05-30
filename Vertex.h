@@ -12,6 +12,7 @@ private:
     int *incidentV;
     int free_inc_id = 0;
     int incidentNum;
+    int saturation = 0;
 public:
     Vertex(): num(-1), incidentV(nullptr), incidentNum(0) {};
     explicit Vertex(int n, int incNum);
@@ -24,6 +25,8 @@ public:
     int getDegree() const { return incidentNum; };
     int getNum() const { return num; }
     const int* getIncidents() { return incidentV; };
+    void setSaturation(int s) { saturation = s; };
+    int getSaturation() const { return saturation; };
 
     Vertex& operator=(const Vertex& other);
 

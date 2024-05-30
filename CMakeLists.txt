@@ -11,4 +11,8 @@ add_executable(project3
         Graph.h
         Vertex.h
         Vertex.cpp
+        Stack.h
+        Stack.cpp
+        Queue.h
+        Queue.cpp
 )

@@ -5,13 +5,13 @@
 #include <stdexcept>
 // TODO: Remove imports
 #include <algorithm>     // for sort
-#include <stack>
-#include <queue>
 #include <vector>
 
 using namespace std;
 
 #include "Vertex.h"
+#include "Stack.h"
+#include "Queue.h"
 
 class Graph {
 private:
