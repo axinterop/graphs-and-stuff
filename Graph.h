@@ -3,22 +3,21 @@
 
 #include <iostream>
 #include <stdexcept>
-// TODO: Remove imports
-#include <algorithm>     // for sort
-#include <vector>
 
 using namespace std;
 
 #include "Vertex.h"
 #include "Stack.h"
 #include "Queue.h"
+#include "Vector.h"
+#include "Vector.cpp"
 
 class Graph {
 private:
     Vertex **vertices;
     int verticesNum;
     int free_v_id = 0;
-    vector<int> componentVertices;
+    Vector<int> componentVertices;
 public:
     Graph(): vertices(nullptr), verticesNum(0) {}
     explicit Graph(int v): verticesNum(v), vertices(new Vertex*[v]) {};

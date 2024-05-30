@@ -17,6 +17,42 @@ bool descendingVertexSaturation(const Vertex *a, const Vertex *b) {
     return a->getSaturation() > b->getSaturation();
 }
 
+template <typename T, typename Compare>
+void merge(Vector<T>& arr, int start, int mid, int end, Compare comp) {
+    int left = start, right = mid + 1;
+    Vector<T> temp(end - start + 1);
+    int k = 0;
+
+    while (left <= mid && right <= end) {
+        if (comp(arr[left], arr[right])) {
+            temp[k++] = arr[left++];
+        } else {
+            temp[k++] = arr[right++];
+        }
+    }
+
+    while (left <= mid) {
+        temp[k++] = arr[left++];
+    }
+
+    while (right <= end) {
+        temp[k++] = arr[right++];
+    }
+
+    for (int i = 0; i < k; i++) {
+        arr[start + i] = temp[i];
+    }
+}
+
+template <typename T, typename Compare>
+void mergeSort(Vector<T>& arr, int start, int end, Compare comp) {
+    if (start < end) {
+        int mid = start + (end - start) / 2;
+        mergeSort(arr, start, mid, comp); // Sort left sub-array
+        mergeSort(arr, mid + 1, end, comp); // Sort right sub-array
+        merge(arr, start, mid, end, comp); // Merge sorted sub-arrays
+    }
+}
 
 Graph::~Graph() {
     for (int v = 0; v < verticesNum; v++) {
@@ -64,11 +100,10 @@ void Graph::solve() {
 }
 
 void Graph::degreeSequence() {
-    int degrees[verticesNum];
+    Vector<int> degrees(verticesNum);
     for (int v = 0; v < verticesNum; v++)
-        degrees[v] = vertices[v]->getDegree();
-    // TODO: Implement sort algorithm
-    std::sort(degrees, degrees + verticesNum, descending);
+        degrees.push_back(vertices[v]->getDegree());
+    mergeSort(degrees, 0, verticesNum - 1, descending);
     for (int v = 0; v < verticesNum; v++)
         cout << degrees[v] << " ";
     cout << endl;
@@ -231,10 +266,10 @@ void Graph::colorGreedy() {
 }
 
 void Graph::colorLF() {
-    auto **verticesDesc = new Vertex *[verticesNum];
+    Vector<Vertex*> verticesDesc(verticesNum);
     for (int v = 0; v < verticesNum; v++)
         verticesDesc[v] = vertices[v];
-    std::sort(verticesDesc, verticesDesc + verticesNum, descendingVertex);
+    mergeSort(verticesDesc, 0, verticesNum - 1, descendingVertex);
 
     int color[verticesNum] = {};
     color[verticesDesc[0]->getNum()] = 1;
@@ -258,7 +293,7 @@ void Graph::colorLF() {
         cout << color[v] << " ";
     cout << endl;
 
-    delete[] verticesDesc;
+//    delete[] verticesDesc;
 }
 
 void Graph::colorSLF() {

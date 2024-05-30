@@ -15,4 +15,6 @@ add_executable(project3
         Stack.cpp
         Queue.h
         Queue.cpp
+        Vector.h
+        Vector.cpp
 )
