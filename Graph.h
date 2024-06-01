@@ -14,13 +14,13 @@ using namespace std;
 
 class Graph {
 private:
-    Vertex **vertices;
+    Vector<Vertex*> vertices;
     int verticesNum;
-    int free_v_id = 0;
+    int size = 0;
     Vector<int> componentVertices;
 public:
-    Graph(): vertices(nullptr), verticesNum(0) {}
-    explicit Graph(int v): verticesNum(v), vertices(new Vertex*[v]) {};
+    Graph(): verticesNum(0) {}
+    explicit Graph(int v): verticesNum(v), vertices(v, nullptr) {};
     ~Graph();
 
     Vertex& operator[](int index);

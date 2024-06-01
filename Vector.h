@@ -21,6 +21,9 @@ public:
     }
     ~Vector() { delete[] arr; }
 
+    void copy(const Vector& other);
+    Vector<T>& operator=(const Vector& other);
+
     void push_back(const T& val);
     void pop_back();
 

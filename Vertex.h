@@ -29,14 +29,12 @@ public:
     int getSaturation() const { return saturation; };
 
     Vertex& operator=(const Vertex& other);
+    int operator[](int index);
 
-    static Vertex** begin(Vertex** vertices) {
-        return vertices;
-    }
-
-    static Vertex** end(Vertex** vertices, int size) {
-        return vertices + size;
-    }
+    int* begin() { return incidentV; }
+    const int* begin() const { return incidentV; }
+    int* end() { return incidentV + incidentNum; }
+    const int* end() const { return incidentV + incidentNum; }
 };
 
 

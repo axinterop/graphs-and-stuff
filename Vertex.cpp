@@ -51,3 +51,7 @@ Vertex& Vertex::operator=(const Vertex& other) {
 
     return *this;
 }
+
+int Vertex::operator[](int index) {
+    return incidentV[index];
+}

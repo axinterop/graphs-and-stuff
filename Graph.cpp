@@ -58,7 +58,6 @@ Graph::~Graph() {
     for (int v = 0; v < verticesNum; v++) {
         delete vertices[v];
     }
-    delete[] vertices;
 }
 
 Vertex &Graph::operator[](int index) {
@@ -70,10 +69,10 @@ Vertex &Graph::operator[](int index) {
 }
 
 void Graph::addVertex(int n, int incNum) {
-    if (free_v_id >= verticesNum) {
-        throw std::invalid_argument("free_v_id exceeded verticesNum");
+    if (size >= verticesNum) {
+        throw std::invalid_argument("size exceeded verticesNum");
     }
-    vertices[free_v_id++] = new Vertex(n, incNum);
+    vertices[size++] = new Vertex(n, incNum);
 }
 
 void Graph::addIncident(int v, int inc) { vertices[v]->addIncident(inc); }
@@ -110,22 +109,17 @@ void Graph::degreeSequence() {
 }
 
 void Graph::numberOfComponents() {
-    bool candidateForComponent[verticesNum];
-    for (int i = 0; i < verticesNum; i++)
-        candidateForComponent[i] = true;
-
-    int startVertex = 0;
+    Vector<bool> candidateForComponent(verticesNum, true);
     int componentsCount = 0;
 
-    for (int c = 0; c < verticesNum; c++) {
-        if (!candidateForComponent[c])
+    for (int startVertex = 0; startVertex < verticesNum; startVertex++) {
+        if (!candidateForComponent[startVertex])
             continue;
-
-        startVertex = c;
 
         Vector<bool> visited(verticesNum, false);
         Stack unvisited;
         unvisited.push(startVertex);
+        candidateForComponent[startVertex] = false;
 
         while (!unvisited.isEmpty()) {
             int currentV = unvisited.peek();
@@ -133,20 +127,17 @@ void Graph::numberOfComponents() {
 
             if (visited[currentV])
                 continue;
-
             visited[currentV] = true;
-            // currentV was popped() from child stack, so it's a part of some component
-            // thus cannot be a candidate for separate component
-            candidateForComponent[currentV] = false;
-            for (int i = 0; i < vertices[currentV]->getDegree(); ++i) {
-                int childV = vertices[currentV]->getIncidents()[i];
+
+            for (int childV : *vertices[currentV]) {
                 if (!visited[childV]) {
                     unvisited.push(childV);
+                    candidateForComponent[childV] = false;
                 }
             }
         }
         componentsCount++;
-        componentVertices.push_back(c);
+        componentVertices.push_back(startVertex);
     }
 
     cout << componentsCount << endl;
@@ -172,8 +163,7 @@ void Graph::isBipartite() {
                 continue;
             visited[parentV] = true;
 
-            for (int i = 0; i < vertices[parentV]->getDegree(); ++i) {
-                int childV = vertices[parentV]->getIncidents()[i];
+            for (int childV : *vertices[parentV]) {
                 if (!visited[childV]) {
                     if (colorIsSet[childV] && is_red[childV] == is_red[parentV]) {
                         cout << "F" << endl;
@@ -206,33 +196,42 @@ void Graph::isBipartite() {
 }
 
 void Graph::eccentricity() {
+    int counter = 0;
     for (int startVertex = 0; startVertex < verticesNum; startVertex++) {
         // Process components
-        Vector<int> distance(verticesNum, 0);
-        Vector<bool> distanceIsSet(verticesNum, false);
+        if (vertices[startVertex]->getDegree() == 0) {
+            cout << "0 ";
+            continue;
+        }
+
+        Vector<int> distance(verticesNum, -1);
         Queue unvisited;
         unvisited.enqueue(startVertex);
+        counter++;
         distance[startVertex] = 0;
-        distanceIsSet[startVertex] = true;
+        int max = 0;
 
         while (!unvisited.isEmpty()) {
+            if (counter == size) {
+                while (!unvisited.isEmpty())
+                    unvisited.dequeue();
+                break;
+            }
             int parentV = unvisited.peek();
             unvisited.dequeue();
-            for (int i = 0; i < vertices[parentV]->getDegree(); ++i) {
-                int childV = vertices[parentV]->getIncidents()[i];
-                if (!distanceIsSet[childV]) {
+
+            for (int childV : *vertices[parentV]) {
+                if (distance[childV] == -1) {
                     distance[childV] = distance[parentV] + 1;
-                    distanceIsSet[childV] = true;
                     unvisited.enqueue(childV);
+                    counter++;
+                    if (distance[childV] > max)
+                        max = distance[childV];
                 }
             }
         }
-
-        int max = -1;
-        for (auto d: distance) {
-            if (d > max) max = d;
-        }
         cout << max << " ";
+        counter = 0;
     }
     cout << endl;
 }
