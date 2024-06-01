@@ -2,10 +2,15 @@
 
 bool descending(int a, int b) { return a > b; }
 
-bool descendingVertex(const Vertex *a, const Vertex *b) {
-    if (a->getDegree() == b->getDegree())
-        return a->getNum() <= b->getNum();
-    return a->getDegree() > b->getDegree();
+typedef struct {
+    int vertex;
+    int degree;
+} VertexDegree;
+
+bool descendingVertexDegree(const VertexDegree a, const VertexDegree b) {
+    if (a.degree == b.degree)
+        return a.vertex <= b.vertex;
+    return a.degree > b.degree;
 }
 
 bool descendingVertexSaturation(const Vertex *a, const Vertex *b) {
@@ -54,6 +59,8 @@ void mergeSort(Vector<T> &arr, int start, int end, Compare comp) {
     }
 }
 
+
+
 Graph::~Graph() {
     for (int v = 0; v < verticesNum; v++) {
         delete vertices[v];
@@ -88,22 +95,22 @@ void Graph::print() {
 void Graph::solve() {
     degreeSequence();
     numberOfComponents();
-//    isBipartite();
-    cout << "?" << endl;
-//    eccentricity();
-    cout << "?" << endl;
-//    isPlanar();
-    cout << "?" << endl;
+    isBipartite();
+//    cout << "?" << endl;
+    eccentricity();
+//    cout << "?" << endl;
+    isPlanar();
+//    cout << "?" << endl;
     colorGreedy();
 //    cout << "?" << endl;
-//    colorLF();
-    cout << "?" << endl;
-//    colorSLF();
-    cout << "?" << endl;
-//    numberOfC4();
-    cout << "?" << endl;
-//    numberOfComplementEdges();
-    cout << "?" << endl;
+    colorLF();
+//    cout << "?" << endl;
+    colorSLF()    ;
+//    cout << "?" << endl;
+    numberOfC4();
+//    cout << "?" << endl;
+    numberOfComplementEdges();
+//    cout << "?" << endl;
 }
 
 void Graph::degreeSequence() {
@@ -214,9 +221,11 @@ void Graph::isPlanar() {
     cout << '?' << endl;
 }
 
+
+
 void Graph::colorGreedy() {
     Vector<int> color(verticesNum, 0);
-    bool *colorOccupied = new bool[verticesNum]();
+    Vector<bool> colorOccupied(verticesNum, false);
     color[0] = 1;
     printf("%d ", color[0]);
     for (int parentV = 1; parentV < verticesNum; parentV++) {
@@ -240,38 +249,43 @@ void Graph::colorGreedy() {
     }
 
     printf("\n");
-    delete[] colorOccupied;
 }
 
+
 void Graph::colorLF() {
-    Vector<Vertex *> verticesDesc(verticesNum);
-    for (int v = 0; v < verticesNum; v++)
-        verticesDesc[v] = vertices[v];
-    mergeSort(verticesDesc, 0, verticesNum - 1, descendingVertex);
+    Vector<VertexDegree> vd(verticesNum);
+    for (int v = 0; v < verticesNum; v++) {
+        vd[v].vertex = v;
+        vd[v].degree = vertices[v]->getDegree();
+
+    }
+    mergeSort(vd, 0, verticesNum - 1, descendingVertexDegree);
 
     Vector<int> color(verticesNum, 0);
-    color[verticesDesc[0]->getNum()] = 1;
+    color[vd[0].vertex] = 1;
+    Vector<bool> colorOccupied(verticesNum, false);
 
+    int parentV;
     for (int vIndex = 1; vIndex < verticesNum; vIndex++) {
-        int parentV = verticesDesc[vIndex]->getNum();
-        Vector<bool> colorOccupied(verticesNum, false);
-        for (int i = 0; i < vertices[parentV]->getDegree(); i++) {
-            int childV = vertices[parentV]->getIncidents()[i];
+        parentV = vd[vIndex].vertex;
+        for (int childV : *vertices[parentV]) {
             colorOccupied[color[childV]] = true;
         }
-        for (int potentialColor = 1; potentialColor < verticesNum + 1; potentialColor++) {
-            if (!colorOccupied[potentialColor]) {
-                color[parentV] = potentialColor;
-                break;
-            }
+
+        int potentialColor;
+        for (potentialColor = 1; potentialColor < verticesNum + 1; potentialColor++)
+            if (!colorOccupied[potentialColor]) break;
+        color[parentV] = potentialColor;
+
+        for (int childV : *vertices[parentV]) {
+            if (color[childV] != 0)
+                colorOccupied[color[childV]] = false;
         }
     }
 
     for (int v = 0; v < verticesNum; v++)
         printf("%d ", color[v]);
     printf("\n");
-
-//    delete[] verticesDesc;
 }
 
 void Graph::colorSLF() {
@@ -286,11 +300,11 @@ void Graph::numberOfC4() {
 
 void Graph::numberOfComplementEdges() {
     // TODO: Change to long long int?
-    int complementEdgeNum = verticesNum * (verticesNum - 1);
+    long long int complementEdgeNum = verticesNum * (verticesNum - 1);
     for (int v = 0; v < verticesNum; v++)
         complementEdgeNum -= vertices[v]->getDegree();
     complementEdgeNum /= 2;
-    printf("%d\n", complementEdgeNum);
+    printf("%lld\n", complementEdgeNum);
 }
 
 void Graph::dfs(int startVertex, Vector<bool> &visited, Vector<bool> &candidateForComponent) {
