@@ -1,43 +1,50 @@
 #include "Queue.h"
 
+Queue::Queue(int cap) {
+    arr = new int[cap];
+    capacity = cap;
+    front = 0;
+    rear = -1;
+    size = 0;
+}
+
 Queue::~Queue() {
-    while (!isEmpty()) {
-        dequeue();
+    if (arr != nullptr) {
+        delete[] arr;
     }
 }
 
 void Queue::enqueue(int data) {
-    Node *newNode = new Node(data);
-    if (rear == nullptr) {
-        front = rear = newNode;
+    if (isFull()) {
+        throw std::overflow_error("Queue is full");
     } else {
-        rear->next = newNode;
-        rear = newNode;
+        rear = (rear + 1) % capacity;
+        arr[rear] = data;
+        size++;
     }
 }
 
 void Queue::dequeue() {
     if (isEmpty()) {
-        throw std::invalid_argument(".dequeue() on empty queue");
+        throw std::underflow_error("Queue is empty");
     } else {
-        Node *tmp = front;
-        front = front->next;
-        if (front == nullptr) {
-            rear = nullptr;
-        }
-        delete tmp;
+        front = (front + 1) % capacity;
+        size--;
     }
 }
 
 int Queue::peek() {
-    if (!isEmpty())
-        return front->data;
-    else {
-        throw std::invalid_argument(".peek() on empty queue");
+    if (isEmpty()) {
+        throw std::underflow_error("Queue is empty");
+    } else {
+        return arr[front];
     }
 }
 
 bool Queue::isEmpty() {
-    return front == nullptr;
+    return size == 0;
 }
 
+bool Queue::isFull() {
+    return size == capacity;
+}

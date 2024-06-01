@@ -17,8 +17,8 @@ bool descendingVertexSaturation(const Vertex *a, const Vertex *b) {
     return a->getSaturation() > b->getSaturation();
 }
 
-template <typename T, typename Compare>
-void merge(Vector<T>& arr, int start, int mid, int end, Compare comp) {
+template<typename T, typename Compare>
+void merge(Vector<T> &arr, int start, int mid, int end, Compare comp) {
     int left = start, right = mid + 1;
     Vector<T> temp(end - start + 1);
     int k = 0;
@@ -44,8 +44,8 @@ void merge(Vector<T>& arr, int start, int mid, int end, Compare comp) {
     }
 }
 
-template <typename T, typename Compare>
-void mergeSort(Vector<T>& arr, int start, int end, Compare comp) {
+template<typename T, typename Compare>
+void mergeSort(Vector<T> &arr, int start, int end, Compare comp) {
     if (start < end) {
         int mid = start + (end - start) / 2;
         mergeSort(arr, start, mid, comp); // Sort left sub-array
@@ -88,14 +88,22 @@ void Graph::print() {
 void Graph::solve() {
     degreeSequence();
     numberOfComponents();
-    isBipartite();
-    eccentricity();
-    isPlanar();
+//    isBipartite();
+    cout << "?" << endl;
+//    eccentricity();
+    cout << "?" << endl;
+//    isPlanar();
+    cout << "?" << endl;
     colorGreedy();
-    colorLF();
-    colorSLF();
-    numberOfC4();
-    numberOfComplementEdges();
+//    cout << "?" << endl;
+//    colorLF();
+    cout << "?" << endl;
+//    colorSLF();
+    cout << "?" << endl;
+//    numberOfC4();
+    cout << "?" << endl;
+//    numberOfComplementEdges();
+    cout << "?" << endl;
 }
 
 void Graph::degreeSequence() {
@@ -104,111 +112,76 @@ void Graph::degreeSequence() {
         degrees.push_back(vertices[v]->getDegree());
     mergeSort(degrees, 0, verticesNum - 1, descending);
     for (int v = 0; v < verticesNum; v++)
-        cout << degrees[v] << " ";
-    cout << endl;
+        printf("%d ", degrees[v]);
+    printf("\n");
 }
 
 void Graph::numberOfComponents() {
     Vector<bool> candidateForComponent(verticesNum, true);
+    Vector<bool> visited(verticesNum, false);
     int componentsCount = 0;
 
     for (int startVertex = 0; startVertex < verticesNum; startVertex++) {
-        if (!candidateForComponent[startVertex])
-            continue;
-
-        Vector<bool> visited(verticesNum, false);
-        Stack unvisited;
-        unvisited.push(startVertex);
-        candidateForComponent[startVertex] = false;
-
-        while (!unvisited.isEmpty()) {
-            int currentV = unvisited.peek();
-            unvisited.pop();
-
-            if (visited[currentV])
-                continue;
-            visited[currentV] = true;
-
-            for (int childV : *vertices[currentV]) {
-                if (!visited[childV]) {
-                    unvisited.push(childV);
-                    candidateForComponent[childV] = false;
-                }
-            }
+        if (!visited[startVertex] && candidateForComponent[startVertex]) {
+            dfs(startVertex, visited, candidateForComponent);
+            componentsCount++;
+            componentVertices.push_back(startVertex);
         }
-        componentsCount++;
-        componentVertices.push_back(startVertex);
     }
 
-    cout << componentsCount << endl;
+    printf("%d\n", componentsCount);
 }
 
 void Graph::isBipartite() {
     Vector<bool> is_red(verticesNum, false);
     Vector<bool> colorIsSet(verticesNum, false);
 
-    for (int startVertex: componentVertices) {
+    for (int startVertex = 0; startVertex < verticesNum; startVertex++) {
         // Process components
-        Vector<bool> visited(verticesNum, false);
-        Stack unvisited;
-        unvisited.push(startVertex);
+        if (colorIsSet[startVertex])
+            continue;
+
+        Queue unvisited(verticesNum);
+        unvisited.enqueue(startVertex);
         is_red[startVertex] = true;
         colorIsSet[startVertex] = true;
 
         while (!unvisited.isEmpty()) {
             int parentV = unvisited.peek();
-            unvisited.pop();
+            unvisited.dequeue();
 
-            if (visited[parentV])
-                continue;
-            visited[parentV] = true;
-
-            for (int childV : *vertices[parentV]) {
-                if (!visited[childV]) {
-                    if (colorIsSet[childV] && is_red[childV] == is_red[parentV]) {
-                        cout << "F" << endl;
+            for (int childV: *vertices[parentV]) {
+                if (colorIsSet[childV]) {
+                    if (is_red[childV] == is_red[parentV]) {
+                        printf("F\n");
                         return;
                     }
-                    if (!colorIsSet[childV]) {
-                        is_red[childV] = !is_red[parentV];
-                        colorIsSet[childV] = true;
-                    }
-                    unvisited.push(childV);
+                } else {
+                    is_red[childV] = !is_red[parentV];
+                    colorIsSet[childV] = true;
+                    unvisited.enqueue(childV);
                 }
             }
         }
     }
 
-    for (int v1 = 0; v1 < verticesNum; v1++) {
-        for (int v2 = 0; v2 < verticesNum; v2++) {
-            if (v1 == v2)
-                continue;
-            // can be optimised
-            // checks if v2 is incident with v1, but
-            // also checks if v1 is incident with v2
-            if (is_red[v1] == is_red[v2] && vertices[v1]->isIncident(v2)) {
-                cout << "F" << endl;
-                return;
-            }
-        }
-    }
-    cout << "T" << endl;
+    printf("T\n");
 }
 
 void Graph::eccentricity() {
     int counter = 0;
+
     for (int startVertex = 0; startVertex < verticesNum; startVertex++) {
-        // Process components
         if (vertices[startVertex]->getDegree() == 0) {
-            cout << "0 ";
+            printf("0 ");
             continue;
         }
 
         Vector<int> distance(verticesNum, -1);
-        Queue unvisited;
+        Queue unvisited(verticesNum);
         unvisited.enqueue(startVertex);
-        counter++;
         distance[startVertex] = 0;
+        counter++;
         int max = 0;
 
         while (!unvisited.isEmpty()) {
@@ -220,7 +193,7 @@ void Graph::eccentricity() {
             int parentV = unvisited.peek();
             unvisited.dequeue();
 
-            for (int childV : *vertices[parentV]) {
+            for (int childV: *vertices[parentV]) {
                 if (distance[childV] == -1) {
                     distance[childV] = distance[parentV] + 1;
                     unvisited.enqueue(childV);
@@ -230,10 +203,10 @@ void Graph::eccentricity() {
                 }
             }
         }
-        cout << max << " ";
+        printf("%d ", max);
         counter = 0;
     }
-    cout << endl;
+    printf("\n");
 }
 
 void Graph::isPlanar() {
@@ -243,29 +216,35 @@ void Graph::isPlanar() {
 
 void Graph::colorGreedy() {
     Vector<int> color(verticesNum, 0);
+    bool *colorOccupied = new bool[verticesNum]();
     color[0] = 1;
+    printf("%d ", color[0]);
     for (int parentV = 1; parentV < verticesNum; parentV++) {
-        Vector<bool> colorOccupied(verticesNum, false);
-        for (int i = 0; i < vertices[parentV]->getDegree(); i++) {
-            int childV = vertices[parentV]->getIncidents()[i];
-            colorOccupied[color[childV]] = true;
+        for (int childV : *vertices[parentV]) {
+            if (color[childV] != 0)
+                colorOccupied[color[childV]] = true;
         }
-        for (int potentialColor = 1; potentialColor < verticesNum + 1; potentialColor++) {
-            if (!colorOccupied[potentialColor]) {
-                color[parentV] = potentialColor;
+
+        int potentialColor;
+        for (potentialColor = 1; potentialColor < verticesNum + 1; potentialColor++) {
+            if (!colorOccupied[potentialColor])
                 break;
-            }
         }
-    }
-    for (int v = 0; v < verticesNum; v++) {
-        cout << color[v] << " ";
+
+        color[parentV] = potentialColor;
+        printf("%d ", potentialColor);
+
+        for (int childV : *vertices[parentV]) {
+            colorOccupied[color[childV]] = false;
+        }
     }
 
-    cout << endl;
+    printf("\n");
+    delete[] colorOccupied;
 }
 
 void Graph::colorLF() {
-    Vector<Vertex*> verticesDesc(verticesNum);
+    Vector<Vertex *> verticesDesc(verticesNum);
     for (int v = 0; v < verticesNum; v++)
         verticesDesc[v] = vertices[v];
     mergeSort(verticesDesc, 0, verticesNum - 1, descendingVertex);
@@ -289,8 +268,8 @@ void Graph::colorLF() {
     }
 
     for (int v = 0; v < verticesNum; v++)
-        cout << color[v] << " ";
-    cout << endl;
+        printf("%d ", color[v]);
+    printf("\n");
 
 //    delete[] verticesDesc;
 }
@@ -311,5 +290,17 @@ void Graph::numberOfComplementEdges() {
     for (int v = 0; v < verticesNum; v++)
         complementEdgeNum -= vertices[v]->getDegree();
     complementEdgeNum /= 2;
-    cout << complementEdgeNum << endl;
+    printf("%d\n", complementEdgeNum);
+}
+
+void Graph::dfs(int startVertex, Vector<bool> &visited, Vector<bool> &candidateForComponent) {
+    visited[startVertex] = true;
+    candidateForComponent[startVertex] = false;
+
+    for (int i = 0; i < vertices[startVertex]->getDegree(); ++i) {
+        int childV = vertices[startVertex]->getIncidents()[i];
+        if (!visited[childV]) {
+            dfs(childV, visited, candidateForComponent);
+        }
+    }
 }

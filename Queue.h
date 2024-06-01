@@ -3,21 +3,22 @@
 
 #include <stdexcept>
 
-#include "Node.h"
-
 class Queue {
 private:
-    Node *front;
-    Node *rear;
+    int *arr;
+    int front;
+    int rear;
+    int capacity;
+    int size;
+
 public:
-    Queue() { front = rear = nullptr; };
+    Queue(int cap);
     ~Queue();
     void enqueue(int data);
     void dequeue();
     int peek();
     bool isEmpty();
+    bool isFull();
 };
-
-
 
 #endif //PROJECT3_QUEUE_H

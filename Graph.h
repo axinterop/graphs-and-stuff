@@ -19,7 +19,7 @@ private:
     int size = 0;
     Vector<int> componentVertices;
 public:
-    Graph(): verticesNum(0) {}
+    Graph(): verticesNum(0), vertices(0) {}
     explicit Graph(int v): verticesNum(v), vertices(v, nullptr) {};
     ~Graph();
 
@@ -27,6 +27,8 @@ public:
 
     void addVertex(int n, int incNum);
     void addIncident(int v, int inc);
+
+    void dfs(int startVertex, Vector<bool>& visited, Vector<bool>& candidateForComponent);
 
     void print();
     void solve();

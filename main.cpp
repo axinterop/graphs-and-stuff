@@ -5,23 +5,21 @@ int main() {
     int verticesNum = 0;
     int incidentNum = 0;
     int incidentIn = 0;
-    cin >> graphNum;
+    scanf("%d", &graphNum);
     for (int i = 0; i < graphNum; i++) {
         // Process one graph
-        cin >> verticesNum;
+        scanf("%d", &verticesNum);
         Graph g(verticesNum);
         for (int vertex = 0; vertex < verticesNum; vertex++) {
             // Process one vertex
-            cin >> incidentNum;
+            scanf("%d", &incidentNum);
             g.addVertex(vertex, incidentNum);
             for (int incident = 0; incident < incidentNum; incident++) {
                 // Process one incident vertex
-                cin >> incidentIn;
+                scanf("%d", &incidentIn);
                 g.addIncident(vertex, incidentIn - 1);
             }
         }
-//        if (i < 4)
-//            continue;
         g.solve();
     }
 
