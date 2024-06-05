@@ -5,21 +5,22 @@ bool descending(int a, int b) { return a > b; }
 typedef struct {
     int vertex;
     int degree;
-} VertexDegree;
+    int saturation;
+} VDS;
 
-bool descendingVertexDegree(const VertexDegree a, const VertexDegree b) {
+bool descendingVertexDegree(const VDS a, const VDS b) {
     if (a.degree == b.degree)
         return a.vertex <= b.vertex;
     return a.degree > b.degree;
 }
 
-bool descendingVertexSaturation(const Vertex *a, const Vertex *b) {
-    if (a->getSaturation() == b->getSaturation()) {
-        if (a->getDegree() == b->getDegree())
-            return a->getNum() < b->getNum();
-        return a->getDegree() > b->getDegree();
+bool descendingVertexDegreeSaturation(const VDS a, const VDS b) {
+    if (a.saturation == b.saturation) {
+        if (a.degree == b.degree)
+            return a.vertex < b.vertex;
+        return a.degree > b.degree;
     }
-    return a->getSaturation() > b->getSaturation();
+    return a.saturation > b.saturation;
 }
 
 template<typename T, typename Compare>
@@ -58,7 +59,6 @@ void mergeSort(Vector<T> &arr, int start, int end, Compare comp) {
         merge(arr, start, mid, end, comp); // Merge sorted sub-arrays
     }
 }
-
 
 
 Graph::~Graph() {
@@ -105,7 +105,7 @@ void Graph::solve() {
 //    cout << "?" << endl;
     colorLF();
 //    cout << "?" << endl;
-    colorSLF()    ;
+    colorSLF();
 //    cout << "?" << endl;
     numberOfC4();
 //    cout << "?" << endl;
@@ -222,14 +222,13 @@ void Graph::isPlanar() {
 }
 
 
-
 void Graph::colorGreedy() {
     Vector<int> color(verticesNum, 0);
     Vector<bool> colorOccupied(verticesNum, false);
     color[0] = 1;
     printf("%d ", color[0]);
     for (int parentV = 1; parentV < verticesNum; parentV++) {
-        for (int childV : *vertices[parentV]) {
+        for (int childV: *vertices[parentV]) {
             if (color[childV] != 0)
                 colorOccupied[color[childV]] = true;
         }
@@ -243,7 +242,7 @@ void Graph::colorGreedy() {
         color[parentV] = potentialColor;
         printf("%d ", potentialColor);
 
-        for (int childV : *vertices[parentV]) {
+        for (int childV: *vertices[parentV]) {
             colorOccupied[color[childV]] = false;
         }
     }
@@ -253,11 +252,10 @@ void Graph::colorGreedy() {
 
 
 void Graph::colorLF() {
-    Vector<VertexDegree> vd(verticesNum);
+    Vector<VDS> vd(verticesNum);
     for (int v = 0; v < verticesNum; v++) {
         vd[v].vertex = v;
         vd[v].degree = vertices[v]->getDegree();
-
     }
     mergeSort(vd, 0, verticesNum - 1, descendingVertexDegree);
 
@@ -268,7 +266,7 @@ void Graph::colorLF() {
     int parentV;
     for (int vIndex = 1; vIndex < verticesNum; vIndex++) {
         parentV = vd[vIndex].vertex;
-        for (int childV : *vertices[parentV]) {
+        for (int childV: *vertices[parentV]) {
             colorOccupied[color[childV]] = true;
         }
 
@@ -277,7 +275,7 @@ void Graph::colorLF() {
             if (!colorOccupied[potentialColor]) break;
         color[parentV] = potentialColor;
 
-        for (int childV : *vertices[parentV]) {
+        for (int childV: *vertices[parentV]) {
             if (color[childV] != 0)
                 colorOccupied[color[childV]] = false;
         }
@@ -298,13 +296,16 @@ void Graph::numberOfC4() {
     cout << '?' << endl;
 }
 
+#define ulli unsigned long long int
+
 void Graph::numberOfComplementEdges() {
-    // TODO: Change to long long int?
-    long long int complementEdgeNum = verticesNum * (verticesNum - 1);
+    ulli allVertices = verticesNum;
+    ulli allEdgesComplement = allVertices * (allVertices - 1) / 2;
+    ulli allEdges = 0;
     for (int v = 0; v < verticesNum; v++)
-        complementEdgeNum -= vertices[v]->getDegree();
-    complementEdgeNum /= 2;
-    printf("%lld\n", complementEdgeNum);
+        allEdges += vertices[v]->getDegree();
+    allEdges /= 2;
+    printf("%llu\n", allEdgesComplement - allEdges);
 }
 
 void Graph::dfs(int startVertex, Vector<bool> &visited, Vector<bool> &candidateForComponent) {

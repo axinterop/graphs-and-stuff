@@ -12,7 +12,7 @@ private:
     int size;
 
 public:
-    Queue(int cap);
+    explicit Queue(int cap);
     ~Queue();
     void enqueue(int data);
     void dequeue();
