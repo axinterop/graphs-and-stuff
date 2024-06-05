@@ -1,6 +1,6 @@
 # Graphs and stuff like that
 
-All the data structures and algorithms have been implemented by me, without use of C++ STL (except for cin/cout).
+All the data structures and algorithms have been implemented by me, without use of C++ STL.
 
 ---
 
